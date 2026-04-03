@@ -1,0 +1,16 @@
+# Python virtual environment
+venv/
+
+# Sensitive credentials — NEVER commit this
+.env
+
+# State file — personal to each user's run
+seen_docs.json
+
+# Logs
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
