@@ -1,5 +1,8 @@
 # NBE Document Monitor 🇪🇹
 
+> [!TIP]
+> **Need to install this on another Windows PC?** Check out the [simplified Windows Installation Guide](file:///home/dell500/.gemini/antigravity/scratch/nbe_monitor/INSTALL_WINDOWS.md).
+
 A Python script that monitors the [National Bank of Ethiopia](https://nbe.gov.et/) website for newly published legal documents and sends a **single consolidated email alert** via [Formspree](https://formspree.io/) when any updates are detected.
 
 ## What it monitors
