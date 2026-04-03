@@ -1,6 +1,9 @@
 import os
+import sys
 import json
 import logging
+import platform
+import subprocess
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -26,6 +29,51 @@ CATEGORIES = {
 
 STATE_FILE = "seen_docs.json"
 FORMSPREE_URL = os.getenv("FORMSPREE_URL")
+
+
+def setup_windows_scheduler():
+    """
+    On Windows, ensures a scheduled task exists to run this script daily at 10:00 AM.
+    Uses schtasks.exe to create the task pointing to the current executable.
+    """
+    if platform.system() != "Windows":
+        return
+
+    task_name = "NBE_Monitor"
+    # sys.executable gives the path to the .exe when bundled by PyInstaller
+    exe_path = os.path.abspath(sys.executable)
+    
+    logging.info("Checking Windows Task Scheduler...")
+    
+    try:
+        # Check if task already exists
+        check_task = subprocess.run(
+            ["schtasks", "/query", "/tn", task_name],
+            capture_output=True, text=True
+        )
+        
+        if check_task.returncode == 0:
+            logging.info(f"Scheduled task '{task_name}' already exists.")
+            return
+
+        # Create the task: Daily at 10:00 AM
+        logging.info(f"Creating scheduled task '{task_name}' for 10:00 AM daily.")
+        create_task = subprocess.run(
+            [
+                "schtasks", "/create", "/tn", task_name, 
+                "/tr", f'"{exe_path}"', 
+                "/sc", "daily", "/st", "10:00", "/f"
+            ],
+            capture_output=True, text=True
+        )
+        
+        if create_task.returncode == 0:
+            logging.info("Successfully scheduled the NBE Monitor for 10:00 AM daily.")
+        else:
+            logging.error(f"Failed to create scheduled task: {create_task.stderr}")
+
+    except Exception as e:
+        logging.error(f"Error managing Windows Task Scheduler: {e}")
 
 
 def load_state():
@@ -126,6 +174,10 @@ def send_formspree_alert(combined_message):
 
 def main():
     logging.info("Starting NBE Monitor execution.")
+    
+    # Auto-schedule on Windows if not already done
+    setup_windows_scheduler()
+
     state = load_state()
     state_updated = False
     summary_messages = []

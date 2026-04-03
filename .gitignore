@@ -2,7 +2,7 @@
 venv/
 
 # Sensitive credentials — NEVER commit this
-.env
+#.env
 
 # State file — personal to each user's run
 seen_docs.json
@@ -14,3 +14,9 @@ seen_docs.json
 __pycache__/
 *.pyc
 *.pyo
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+*.exe
